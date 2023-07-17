@@ -1,0 +1,26 @@
+version: '3'
+services:
+  nginx-proxy:
+    user: root
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./django/app:/app
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./django/app/run/gunicorn.sock:/app/run/gunicorn.sock:rw
+      - ./django/app/larva/static:/app/static_root
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: ./django
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./django/app:/app
+      - ./django/app/run/gunicorn.sock:/app/run/gunicorn.sock:rw
